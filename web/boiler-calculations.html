@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fire-Tube Boiler — Calculation Basis | Digital Twin</title>
+<style>
+  :root {
+    --cream: #f4f1ea;
+    --cream-deep: #ece7da;
+    --navy: #1a3a5c;
+    --navy-soft: #2c5070;
+    --ink: #2a2622;
+    --ink-soft: #5c5650;
+    --rule: #d8d0c0;
+    --steam: #b8c4cc;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    line-height: 1.6;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 6rem;
+  }
+
+  .eyebrow {
+    font-family: Georgia, serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--navy-soft);
+    margin-bottom: 0.6rem;
+  }
+
+  h1 {
+    font-size: clamp(2.1rem, 4.5vw, 3rem);
+    font-weight: 500;
+    color: var(--navy);
+    margin: 0 0 0.4rem;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin: 0 0 2.5rem;
+    max-width: 640px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 2.8rem 0;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    color: var(--navy);
+    font-weight: 500;
+    margin: 0 0 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  h2 .num {
+    font-family: Georgia, serif;
+    font-size: 0.85rem;
+    color: var(--navy-soft);
+    letter-spacing: 0.08em;
+  }
+
+  p { margin: 0 0 1.1rem; }
+
+  .note {
+    background: var(--cream-deep);
+    border-left: 3px solid var(--navy-soft);
+    padding: 0.9rem 1.2rem;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    margin: 1.4rem 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.4rem 0 1.8rem;
+    font-size: 0.96rem;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  th {
+    font-family: Georgia, serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy-soft);
+    font-weight: 500;
+  }
+
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .calc-block {
+    background: #fdfcf8;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 1.4rem 1.6rem;
+    margin: 1.2rem 0 1.8rem;
+  }
+
+  .calc-block .label {
+    font-family: Georgia, serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy-soft);
+    margin-bottom: 0.5rem;
+  }
+
+  .formula {
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    background: var(--cream-deep);
+    padding: 0.7rem 1rem;
+    border-radius: 2px;
+    margin: 0.6rem 0;
+    overflow-x: auto;
+  }
+
+  .result {
+    font-family: Georgia, serif;
+    font-size: 1.6rem;
+    color: var(--navy);
+    margin-top: 0.6rem;
+  }
+
+  .result .unit {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  .schematic {
+    width: 100%;
+    margin: 1.8rem 0;
+  }
+
+  .footer-note {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+  }
+
+  .footer-note a { color: var(--navy-soft); text-decoration: none; border-bottom: 1px solid var(--rule); }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 2.5rem 1.2rem 4rem; }
+    table { font-size: 0.85rem; }
+    th, td { padding: 0.45rem 0.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Digital Twin — Equipment Calculation Basis</div>
+  <h1>Fire-Tube Boiler</h1>
+  <p class="subtitle">Sizing and heat-transfer basis for the steam generator supplying the 100-house plant model.</p>
+
+  <hr class="divider">
+
+  <h2><span class="num">01</span> Why a fire-tube boiler</h2>
+  <p>At this scale — roughly 472 kW of thermal duty and 636 kg/hr of steam — a fire-tube
+  (shell) boiler is the standard industrial choice. Hot combustion gas passes through a
+  bundle of small tubes submerged in a water-filled shell, transferring heat to the water
+  around them. Water-tube boilers, where the arrangement is reversed, are reserved for
+  larger, higher-pressure utility-scale plants where their higher capital cost is justified.
+  Below a few tons of steam per hour, fire-tube construction is simpler, cheaper, and the
+  realistic engineering choice.</p>
+
+  <div class="note">This boiler sits within a simple condensing Rankine cycle: Boiler →
+  Turbine → Condenser → Feedwater Pump → back to Boiler. No compressor is used anywhere
+  in the plant — that component belongs to gas turbine cycles. The feedwater pump is the
+  liquid-side equivalent, re-pressurizing condensate back to boiler pressure.</div>
+
+  <hr class="divider">
+
+  <h2><span class="num">02</span> Design point</h2>
+  <table>
+    <tr><th>Parameter</th><th class="num">Value</th></tr>
+    <tr><td>Boiler pressure</td><td class="num">15 bar (a)</td></tr>
+    <tr><td>Turbine inlet temperature</td><td class="num">250 °C</td></tr>
+    <tr><td>Steam mass flow rate</td><td class="num">0.177 kg/s &nbsp;(636 kg/hr)</td></tr>
+    <tr><td>Boiler thermal duty</td><td class="num">471.6 kW</td></tr>
+    <tr><td>Net electrical output (downstream)</td><td class="num">75.0 kW</td></tr>
+  </table>
+  <p style="font-size:0.92rem; color:var(--ink-soft);">Derived from the full Rankine cycle
+  heat balance — see <code>engineering_calculations.ipynb</code> for the complete
+  steam-table derivation of these values.</p>
+
+  <hr class="divider">
+
+  <h2><span class="num">03</span> Required heat transfer area</h2>
+  <p>The boiler shell must provide enough tube surface area to transfer 471.6 kW from
+  combustion gas into the surrounding water. Using a conservative heat flux assumption
+  typical of small fire-tube boilers:</p>
+
+  <div class="calc-block">
+    <div class="label">Heat Flux Assumption</div>
+    <p>q&nbsp;=&nbsp;25 kW/m² &nbsp;<span style="color:var(--ink-soft); font-style:italic;">— conservative design value for small shell boilers</span></p>
+    <div class="formula">Required Area = Boiler Duty ÷ Heat Flux<br>
+    Required Area = 471.6 kW ÷ 25 kW/m²</div>
+    <div class="result">18.9 <span class="unit">m² of tube surface area required</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <h2><span class="num">04</span> Fire-tube count</h2>
+  <p>Assuming standard small fire-tube dimensions — 50 mm outer diameter, 2.2 m length
+  (matching the boiler shell) — the surface area per tube and the resulting tube count are:</p>
+
+  <div class="calc-block">
+    <div class="label">Per-Tube Surface Area</div>
+    <div class="formula">A_tube = π × OD × Length<br>
+    A_tube = π × 0.05 m × 2.2 m</div>
+    <div class="result">0.346 <span class="unit">m² per tube</span></div>
+  </div>
+
+  <div class="calc-block">
+    <div class="label">Tube Count</div>
+    <div class="formula">Tube Count = Required Area ÷ A_tube<br>
+    Tube Count = 18.9 m² ÷ 0.346 m²</div>
+    <div class="result">≈ 55 <span class="unit">fire-tubes</span></div>
+  </div>
+
+  <div class="note">This is a first-order estimate sized for the 3D model's tube bundle
+  density, not a certified pressure-vessel design. A real boiler design would additionally
+  account for gas-side velocity, fouling factors, draft loss, and manufacturer-specific
+  performance data.</div>
+
+  <hr class="divider">
+
+  <h2><span class="num">05</span> Standard fittings represented in the model</h2>
+  <table>
+    <tr><th>Fitting</th><th>Purpose</th></tr>
+    <tr><td>Safety relief valve</td><td>Opens automatically above safe pressure limit</td></tr>
+    <tr><td>Pressure gauge</td><td>Local pressure indication near steam outlet</td></tr>
+    <tr><td>Water level gauge glass</td><td>Visual confirmation of internal water level</td></tr>
+    <tr><td>Main steam stop valve</td><td>Isolates boiler from steam line for maintenance</td></tr>
+    <tr><td>Feed check valve</td><td>One-way valve at feedwater inlet</td></tr>
+    <tr><td>Blowdown valve</td><td>Periodic drain of shell sediment</td></tr>
+    <tr><td>Manhole / inspection door</td><td>Internal access point (visual detail)</td></tr>
+  </table>
+
+  <div class="footer-note">
+    Part of the <strong>100-House Steam Power Plant Digital Twin</strong> project.
+    Full calculation notebook: <a href="../engineering_calculations.ipynb">engineering_calculations.ipynb</a>
+    &middot; Design basis: <a href="../design-basis.md">design-basis.md</a>
+  </div>
+
+</div>
+</body>
+</html>
